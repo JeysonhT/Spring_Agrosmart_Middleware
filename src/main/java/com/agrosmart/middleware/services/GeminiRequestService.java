@@ -59,6 +59,9 @@ public class GeminiRequestService implements IGeminiRequestService {
 
             var httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
+            System.out.println("Status: " + httpResponse.statusCode());
+            System.out.println("Raw body: " + httpResponse.body());
+
             // procesamiento de la respuesta con JsonNode
             ObjectMapper mapper = new ObjectMapper();
 
