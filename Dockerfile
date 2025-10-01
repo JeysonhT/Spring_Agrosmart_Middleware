@@ -1,26 +1,26 @@
 # --- Etapa de Compilación (Build Stage) ---
-# Esta etapa es idéntica a la anterior, compila el código y crea el .war
-FROM eclipse-temurin:17-jdk-jammy AS builder
+# Usa una imagen oficial de Maven para construir el proyecto.
+FROM maven:3.9.6-eclipse-temurin-17 AS builder
 WORKDIR /app
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-RUN chmod +x mvnw
-RUN ./mvnw dependency:go-offline
+
+# Copia solo el pom.xml para aprovechar el caché de capas de Docker.
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+# Copia el resto del código fuente
 COPY src ./src
-RUN ./mvnw package -DskipTests
+
+# Compila y empaqueta la aplicación, omitiendo los tests
+RUN mvn package -DskipTests
 
 # --- Etapa de Ejecución (Run Stage) ---
-# Usa una imagen de Tomcat para desplegar el archivo WAR
+# Usa Tomcat para desplegar el archivo WAR.
 FROM tomcat:9.0-jre17-temurin
 
-# Elimina las aplicaciones por defecto de Tomcat para limpiar la imagen
+# Limpia las aplicaciones por defecto de Tomcat
 RUN rm -rf /usr/local/tomcat/webapps/*
 
-# Copia el archivo WAR desde la etapa de compilación a la carpeta de despliegue de Tomcat.
-# Al renombrarlo a ROOT.war, Tomcat lo desplegará en la raíz del servidor (ej. http://<host>/)
+# Copia el WAR y lo renombra a ROOT.war para desplegarlo en la raíz
 COPY --from=builder /app/target/*.war /usr/local/tomcat/webapps/ROOT.war
 
-# Expone el puerto 8080, que es el que usa Tomcat por defecto
 EXPOSE 8080
-
-# El comando por defecto de la imagen de Tomcat se encargará de iniciar el servidor.
