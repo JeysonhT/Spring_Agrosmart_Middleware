@@ -17,6 +17,9 @@ RUN mvn package -DskipTests
 # Usa Tomcat para desplegar el archivo WAR.
 FROM tomcat:9.0-jre17-temurin
 
+# Copia nuestra configuración personalizada de server.xml para deshabilitar el puerto de shutdown
+COPY src/main/resources/server.xml /usr/local/tomcat/conf/
+
 # Limpia las aplicaciones por defecto de Tomcat
 RUN rm -rf /usr/local/tomcat/webapps/*
 
