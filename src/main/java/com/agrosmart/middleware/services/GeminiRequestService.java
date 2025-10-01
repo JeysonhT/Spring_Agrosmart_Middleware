@@ -27,6 +27,9 @@ public class GeminiRequestService implements IGeminiRequestService {
 
     public GeminiRequestService() {
         httpClient = HttpClient.newHttpClient();
+        if (System.getenv("API_KEY") == null || System.getenv("API_KEY").isEmpty()) {
+            throw new IllegalStateException("FATAL: La variable de entorno API_KEY no está configurada.");
+        }
     }
 
     @Async
