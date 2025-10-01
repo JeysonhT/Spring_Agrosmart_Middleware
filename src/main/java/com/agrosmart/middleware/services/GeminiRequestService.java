@@ -9,6 +9,9 @@ import com.agrosmart.middleware.model.Response;
 import com.agrosmart.middleware.services.interfaces.IGeminiRequestService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.github.cdimascio.dotenv.Dotenv;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -48,7 +51,9 @@ public class GeminiRequestService implements IGeminiRequestService {
 
             // Leer la variable de entorno del sistema
             String apiKey = System.getenv("API_KEY");
-            String uri = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+            // Dotenv dotenv = Dotenv.load();
+            // String apiKey = dotenv.get("API_KEY");
+            String uri = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
             var httpRequest = HttpRequest.newBuilder(URI.create(uri))
                     .header("Content-Type", "application/json")
@@ -76,12 +81,12 @@ public class GeminiRequestService implements IGeminiRequestService {
                     .get("text")
                     .asText();
 
-            // devolvermos el completable future para su posterior consulta por el controlador
+            // devolvermos el completable future para su posterior consulta por el
+            // controlador
             return CompletableFuture.completedFuture(new Response(text));
 
         } catch (IOException | InterruptedException e) {
-            return CompletableFuture.
-                    completedFuture(new Response("Error al obtener la respuesta: " + e.getMessage()));
+            return CompletableFuture.completedFuture(new Response("Error al obtener la respuesta: " + e.getMessage()));
         }
 
     }
