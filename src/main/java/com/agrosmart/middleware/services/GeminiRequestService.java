@@ -9,7 +9,6 @@ import com.agrosmart.middleware.model.Response;
 import com.agrosmart.middleware.services.interfaces.IGeminiRequestService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.cdimascio.dotenv.Dotenv;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -25,11 +24,9 @@ import org.springframework.stereotype.Service;
 public class GeminiRequestService implements IGeminiRequestService {
 
     private final HttpClient httpClient;
-    Dotenv dotenv;
 
     public GeminiRequestService() {
         httpClient = HttpClient.newHttpClient();
-        dotenv = Dotenv.load();
     }
 
     @Async
@@ -46,8 +43,8 @@ public class GeminiRequestService implements IGeminiRequestService {
 
             JSONObject object = new JSONObject().put("contents", contents);
 
-            //variable de entorno 
-            String apiKey = dotenv.get("API_KEY");
+            // Leer la variable de entorno del sistema
+            String apiKey = System.getenv("API_KEY");
             String uri = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
             var httpRequest = HttpRequest.newBuilder(URI.create(uri))
